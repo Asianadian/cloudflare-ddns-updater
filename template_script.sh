@@ -21,7 +21,7 @@ for ip_service in ${IP_SERVICES[@]}; do
   ip_response=$(curl -s $ip_service)
   if [[ $ip_response =~ $REGEX_IPV4 ]]; then
     current_ip=$BASH_REMATCH
-    logger -s "DDNS Updater: Fetcher current IP $current_ip"
+    logger -s "DDNS Updater: Fetched current IP $current_ip"
     break
   else
     logger -s "DDNS Updater: Failed to retrieve current IP from $service"
@@ -56,7 +56,7 @@ old_ip="${old_ip%\"}"
 old_ip="${old_ip#\"}"
 
 if [[ $current_ip == $old_ip ]]; then
-  logger -s "DDNS Updater: A record IP does not need to be updated."
+  logger -s "DDNS Updater: A record IP does not need to be updated"
   exit 0
 fi
 
