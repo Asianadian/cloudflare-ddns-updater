@@ -74,10 +74,29 @@ update=$(curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/d
 ##### Send update status #####
 success=$(echo $update | jq ".success")
 
-if [[ $success == true]]; then
+if [[ $success == true ]]; then
+  logger -s "DDNS Updater: Successfully updated IP in A record"
 
+  if [[ $DISCORD_WEBHOOK != "" ]]; then
+    curl -s -X POST $DISCORD_WEBHOOK \
+                -H "Accept: application/json" \
+                -H "Content-Type:application/json" \
+                --data "{
+                  \"content\" : \"Updated: '$RECORD_NAME' IP address to '$current_ip'\"
+                }"
+  fi
 else
-  logger -s "DDNS Updater: 
+  logger -s "DDNS Updater: Failed to update IP in A record"
+
+  if [[ $DISCORD_WEBHOOK != "" ]]; then
+    curl -s -X POST $DISCORD_WEBHOOK \
+                -H "Accept: application/json" \
+                -H "Content-Type:application/json" \
+                --data "{
+                  \"content\" : \"Failed: Updating '$RECORD_NAME' IP address to '$current_ip'\"
+                }"
+  fi
+  exit 1
 fi
 
 
